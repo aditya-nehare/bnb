@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BNB</title>
+  </head>
+  <body>
+    <h3>Create a New Listing</h3>
+    <form action="/listings/<%= listing._id %>?_method=PATCH" method="POST">
+      <div>
+        <label for="title">Title</label>
+        <input name="listing[title]" type="text" value="<%= listing.title %>" required />
+      </div>
+      <br />
+      <div>
+        <label for="description">Description</label>
+        <textarea name="listing[description]" required>
+<%= listing.description %></textarea
+        >
+      </div>
+      <br />
+      <div>
+        <label for="image">Image URL</label>
+        <input
+          name="listing[image]" value="<%= listing.image.url %>" type="text"
+        />
+      </div>
+      <br />
+      <div>
+        <label for="price">Price</label>
+        <input name="listing[price]" type="number" value="<%= listing.price %>" required />
+      </div>
+      <br />
+      <div>
+        <label for="country">Country</label>
+        <input name="listing[country]" type="text" value="<%= listing.country %>" required />
+      </div>
+      <br />
+      <div>
+        <label for="location">Location</label>
+        <input name="listing[location]" type="text" value="<%= listing.location %>" required />
+      </div>
+      <br />
+      <button type="submit">Edit Listing</button>
+    </form>
+    <br />
+    <a href="/listings/<%= listing._id %>">Back to Listing</a>
+  </body>
+</html>

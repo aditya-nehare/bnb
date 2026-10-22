@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BNB</title>
+  </head>
+  <body>
+    <h3>Listing</h3>
+    <div>
+      <h2><%= listing.title %></h2>
+      <h4><%= listing.description %></h4>
+      <h5><%= listing.location %></h5>
+      <h5><%= listing.country %></h5>
+      <h5><%= listing.price.toLocaleString("en-IN") %></h5>
+    </div>
+
+    <a href="/listings/<%= listing._id %>/edit">Edit</a>
+
+    <form action="/listings/<%= listing._id %>?_method=DELETE" method="POST">
+      <button>delete</button>
+    </form>
+  </body>
+</html>

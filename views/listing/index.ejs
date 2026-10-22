@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BNB</title>
+  </head>
+  <body>
+    <h3>All Listing</h3>
+    <form action="/listings/new" method="GET">
+      <button>new</button>
+    </form>
+    <div>
+      <% for (let ls of list) { %>
+        <h2><%= ls.title %></h2>
+        <h4><%= ls.description %></h4>
+        <h5><%= ls.location %></h5>
+        <h5><%= ls.country %></h5>
+        <h5><%= ls.price.toLocaleString("en-IN") %></h5>
+        <a href="/listings/<%= ls._id %>">view details</a>
+      <% } %>
+    </div>
+  </body>
+</html>
+
+
