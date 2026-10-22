@@ -8,12 +8,19 @@ const listingSchema = new Schema({
   },
   description: String,
   image: {
-    type: String,
-    default : "https://4kwallpapers.com/images/wallpapers/404-not-found-cute--18164.jpg",
-    set: (v) =>
-      v === " "
-        ? "https://4kwallpapers.com/images/wallpapers/404-not-found-cute--18164.jpg"
-        : v,
+    filename: {
+      type: String,
+      default: "listingimage",
+    },
+    url: {
+      type: String,
+      default:
+        "https://4kwallpapers.com/images/wallpapers/404-not-found-cute--18164.jpg",
+      set: (v) =>
+        v === ""
+          ? "https://4kwallpapers.com/images/wallpapers/404-not-found-cute--18164.jpg"
+          : v,
+    },
   },
   price: Number,
   location: String,

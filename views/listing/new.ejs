@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BNB</title>
+  </head>
+  <body>
+    <h3>Create a New Listing</h3>
+    <form action="/listings" method="POST">
+      <div>
+        <label for="title">Title</label>
+        <input name="listing[title]" type="text" required />
+      </div>
+      <br />
+      <div>
+        <label for="description">Description</label>
+        <textarea name="listing[description]" required></textarea>
+      </div>
+      <br />
+      <div>
+        <label for="image">Image URL</label>
+        <input name="listing[image]" type="text" />
+      </div>
+      <br />
+      <div>
+        <label for="price">Price</label>
+        <input name="listing[price]" type="number" required />
+      </div>
+      <br />
+      <div>
+        <label for="country">Country</label>
+        <input name="listing[country]" type="text" required />
+      </div>
+      <br />
+      <div>
+        <label for="location">Location</label>
+        <input name="listing[location]" type="text" required />
+      </div>
+      <br />
+      <button type="submit">Add Listing</button>
+    </form>
+    <br />
+    <a href="/listings">Back to Listings</a>
+  </body>
+</html>

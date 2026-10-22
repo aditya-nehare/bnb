@@ -1,8 +1,10 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
+const path = require("path");
+const methodOverride = require("method-override");
 
-const listing = require("./models/listing.js");
+const Listing = require("./models/listing.js");
 
 const app = express();
 const PORT = process.env.PORT;
@@ -10,6 +12,10 @@ const MONGO_URL = process.env.MONGO_URL;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride("_method"));
+
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
 const connectDB = async () => {
   try {
@@ -25,25 +31,44 @@ app.get("/", (req, res) => {
   res.status(200).json({ status: "success", message: "Hi, I am root" });
 });
 
-app.get("/testListing", (req, res) => {
-  let sampleListing = new listing({
-    title: "HOME",
-    description: "Better place to do so",
-    price: 100,
-    location: "location",
-    country: "country",
-  });
+app.get("/listings", async (req, res) => {
+  const list = await Listing.find({});
+  res.render("listing/index", { list });
+});
 
-  sampleListing
-    .save()
-    .then((res) => {
-      console.log(res);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+app.get("/listings/new", (req, res) => {
+  res.render("listing/new");
+});
 
-  res.json("success");
+app.post("/listings", async (req, res) => {
+  let listing = new Listing(req.body.listing);
+  await listing.save();
+  res.redirect("/listings");
+});
+
+app.get("/listings/:id/edit", async (req, res) => {
+  let { id } = req.params;
+  let listing = await Listing.findById(id);
+  res.render("listing/edit", { listing });
+});
+
+app.patch("/listings/:id", async (req, res) => {
+  let { id } = req.params;
+  await Listing.findByIdAndUpdate(id, { ...req.body.listing });
+  res.redirect(`/listings/${id}`);
+});
+
+app.get("/listings/:id", async (req, res) => {
+  let { id } = req.params;
+  const listing = await Listing.findById(id);
+  res.render("listing/show", { listing });
+});
+
+
+app.delete("/listings/:id", async (req, res) => {
+  let { id } = req.params;
+  await Listing.findByIdAndDelete(id);
+  res.redirect("/listings");
 });
 
 const startServer = async () => {
