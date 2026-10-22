@@ -1,0 +1,19 @@
+{
+  "name": "bnb",
+  "version": "1.0.0",
+  "description": "developing a hotel/room reservation system using MVC architectural pattern & building state-based authentication and authorization.",
+  "license": "ISC",
+  "author": "aditya nehare",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.8",
+    "ejs": "^7.0.2",
+    "express": "^5.3.0",
+    "mongoose": "^9.11.3",
+    "nodemon": "^3.1.14"
+  }
+}
