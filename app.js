@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
 const methodOverride = require("method-override");
+const engine = require("ejs-mate");
 
 const Listing = require("./models/listing.js");
 
@@ -13,9 +14,12 @@ const MONGO_URL = process.env.MONGO_URL;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+
+app.engine("ejs", engine);
 
 const connectDB = async () => {
   try {
@@ -63,7 +67,6 @@ app.get("/listings/:id", async (req, res) => {
   const listing = await Listing.findById(id);
   res.render("listing/show", { listing });
 });
-
 
 app.delete("/listings/:id", async (req, res) => {
   let { id } = req.params;
