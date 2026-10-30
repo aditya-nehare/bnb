@@ -5,14 +5,11 @@ const path = require("path");
 const methodOverride = require("method-override");
 const engine = require("ejs-mate");
 
-const Listing = require("./models/listing.js");
-const Review = require("./models/review.js");
-
-const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
 const { logger } = require("./middleware.js");
 
-const { listingSchema, reviewSchema } = require("./schema.js");
+const listing_router = require("./routes/listing.js");
+const review_router = require("./routes/review.js");
 
 const app = express();
 const PORT = process.env.PORT;
@@ -25,30 +22,12 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(logger);
 
+app.use("/listings", listing_router);
+app.use("/listings/:id/reviews", review_router);
+
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-
 app.engine("ejs", engine);
-
-const validatelisting = (req, res, next) => {
-  let { error } = listingSchema.validate(req.body);
-  if (error) {
-    let errormessage = error.details.map((el) => el.message).join(", ");
-    throw new ExpressError(400, errormessage);
-  } else {
-    next();
-  }
-};
-
-const validate_review = (req, res, next) => {
-  let { error } = reviewSchema.validate(req.body);
-  if (error) {
-    let errormessage = error.details.map((el) => el.message).join(", ");
-    throw new ExpressError(400, errormessage);
-  } else {
-    next();
-  }
-};
 
 const connectDB = async () => {
   try {
@@ -63,93 +42,6 @@ const connectDB = async () => {
 app.get("/", (req, res) => {
   res.status(200).json({ status: "success", message: "Hi, I am root" });
 });
-
-app.get(
-  "/listings",
-  wrapAsync(async (req, res) => {
-    const list = await Listing.find({});
-    res.render("listing/index", { list });
-  }),
-);
-
-app.get("/listings/new", (req, res) => {
-  res.render("listing/new");
-});
-
-app.post(
-  "/listings",
-  validatelisting,
-  wrapAsync(async (req, res) => {
-    let listing = new Listing(req.body.listing);
-    await listing.save();
-    res.redirect("/listings");
-  }),
-);
-
-app.get(
-  "/listings/:id/edit",
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    let listing = await Listing.findById(id);
-    res.render("listing/edit", { listing });
-  }),
-);
-
-app.patch(
-  "/listings/:id",
-  validatelisting,
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    await Listing.findByIdAndUpdate(id, { ...req.body.listing });
-    res.redirect(`/listings/${id}`);
-  }),
-);
-
-app.delete(
-  "/listings/:id",
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    await Listing.findByIdAndDelete(id);
-    res.redirect("/listings");
-  }),
-);
-
-app.post(
-  "/listings/:id/reviews",
-  validate_review,
-  wrapAsync(async (req, res) => {
-    let listing = await Listing.findById(req.params.id);
-    let new_review = new Review(req.body.review);
-
-    listing.reviews.push(new_review);
-    await new_review.save();
-    await listing.save();
-
-    res.redirect(`/listings/${listing._id}`);
-  }),
-);
-
-app.delete(
-  "/listings/:id/reviews/:review_id",
-  wrapAsync(async (req, res) => {
-    let { id, review_id } = req.params;
-
-    await Listing.findByIdAndUpdate(id, { $pull: { reviews: review_id } });
-    await Review.findByIdAndDelete(review_id);
-
-    res.redirect(`/listings/${id}`);
-  }),
-);
-
-app.get(
-  "/listings/:id",
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    const listing = await Listing.findById(id).populate("reviews");
-    console.log(listing)
-    res.render("listing/show", { listing });
-  }),
-);
 
 app.all("*", (req, res, next) => {
   next(new ExpressError(404, "Page Not Found"));
