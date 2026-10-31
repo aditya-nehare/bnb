@@ -8,12 +8,16 @@ const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const MongoStore = require("connect-mongo").default;
 const flash = require("connect-flash");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./models/user.js");
 
 const ExpressError = require("./utils/ExpressError.js");
 const { logger } = require("./middleware.js");
 
 const listing_router = require("./routes/listing.js");
 const review_router = require("./routes/review.js");
+const user_router = require("./routes/user.js");
 
 const app = express();
 const PORT = process.env.PORT;
@@ -27,16 +31,16 @@ app.use(logger);
 app.use(cookieParser());
 
 const session_option = {
-  secret: "mySuperSecretKey", // Used to cryptographically sign the session ID cookie
-  resave: false, // Forces session to be saved back to the session store, even if modified
-  saveUninitialized: true, // Forces an uninitialized session to be saved to the store (useful for login/auth)
+  secret: "mySuperSecretKey",
+  resave: false,
+  saveUninitialized: true,
   store: MongoStore.create({
     mongoUrl: MONGO_URL,
-    touchAfter: 24 * 3600, // time period in seconds to lazy update sessions
+    touchAfter: 24 * 3600,
   }),
   cookie: {
-    maxAge: 7 * 24 * 60 * 60 * 1000, // Cookie lifespan (7 days)
-    httpOnly: true, // Protects against XSS attacks
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
   },
 };
 
@@ -44,13 +48,29 @@ app.use(session(session_option));
 app.use(flash());
 
 app.use((req, res, next) => {
-  res.locals.success = req.flash("success"); // For success messages
-  res.locals.error = req.flash("error");     // For error messages
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
   next();
 });
 
+//Session config (must come before passport)
+app.use(session(session_option));
+
+//Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session()); // Enables persistent login sessions
+
+//Configure Passport Strategy
+// use static authenticate method of model in LocalStrategy
+passport.use(new LocalStrategy(User.authenticate()));
+
+//Tell Passport how to store/retrieve users in the session
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use("/listings", listing_router);
 app.use("/listings/:id/reviews", review_router);
+app.use("/", user_router);
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
