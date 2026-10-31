@@ -4,6 +4,10 @@ const mongoose = require("mongoose");
 const path = require("path");
 const methodOverride = require("method-override");
 const engine = require("ejs-mate");
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
+const MongoStore = require("connect-mongo").default;
+const flash = require("connect-flash");
 
 const ExpressError = require("./utils/ExpressError.js");
 const { logger } = require("./middleware.js");
@@ -19,8 +23,31 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
-
 app.use(logger);
+app.use(cookieParser());
+
+const session_option = {
+  secret: "mySuperSecretKey", // Used to cryptographically sign the session ID cookie
+  resave: false, // Forces session to be saved back to the session store, even if modified
+  saveUninitialized: true, // Forces an uninitialized session to be saved to the store (useful for login/auth)
+  store: MongoStore.create({
+    mongoUrl: MONGO_URL,
+    touchAfter: 24 * 3600, // time period in seconds to lazy update sessions
+  }),
+  cookie: {
+    maxAge: 7 * 24 * 60 * 60 * 1000, // Cookie lifespan (7 days)
+    httpOnly: true, // Protects against XSS attacks
+  },
+};
+
+app.use(session(session_option));
+app.use(flash());
+
+app.use((req, res, next) => {
+  res.locals.success = req.flash("success"); // For success messages
+  res.locals.error = req.flash("error");     // For error messages
+  next();
+});
 
 app.use("/listings", listing_router);
 app.use("/listings/:id/reviews", review_router);
