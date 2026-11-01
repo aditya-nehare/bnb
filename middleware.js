@@ -1,6 +1,7 @@
 const Listing = require("./models/listing");
 const Review = require("./models/review");
 const ExpressError = require("./utils/ExpressError.js");
+const { listingSchema, reviewSchema } = require("./schema.js");
 
 module.exports.logger = (req, res, next) => {
   const timestamp = new Date().toISOString();
@@ -42,7 +43,6 @@ module.exports.isReviewAuthor = async (req, res, next) => {
   let { id, review_id } = req.params;
   let review = await Review.findById(review_id);
 
-  // Check if the logged-in user's ID matches the review's author ID
   if (!review.author.equals(res.locals.currUser._id)) {
     req.flash("error", "You are not the author of this review!");
     return res.redirect(`/listings/${id}`);
@@ -54,18 +54,16 @@ module.exports.validate_review = (req, res, next) => {
   let { error } = reviewSchema.validate(req.body);
   if (error) {
     let errormessage = error.details.map((el) => el.message).join(", ");
-    throw new ExpressError(400, errormessage);
-  } else {
-    next();
+    return next(new ExpressError(400, errormessage));
   }
+  next();
 };
 
 module.exports.validatelisting = (req, res, next) => {
   let { error } = listingSchema.validate(req.body);
   if (error) {
     let errormessage = error.details.map((el) => el.message).join(", ");
-    throw new ExpressError(400, errormessage);
-  } else {
-    next();
+    return next(new ExpressError(400, errormessage));
   }
+  next();
 };
