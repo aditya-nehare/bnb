@@ -1,4 +1,6 @@
-require("dotenv").config();
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
@@ -84,13 +86,17 @@ app.get("/", (req, res) => {
   res.status(200).json({ status: "success", message: "Hi, I am root" });
 });
 
-app.all("*", (req, res, next) => {
-  next(new ExpressError(404, "Page Not Found"));
+app.all("*", (req, res) => {
+  req.flash("error", "404: The page you are looking for does not exist!");
+  res.redirect("/listings");
 });
 
 app.use((err, req, res, next) => {
-  const { statusCode = 500, message = "Something went wrong" } = err;
-  res.status(statusCode).render("error", { statuscode: statusCode, message });
+  const { statusCode = 500, message = "Something went wrong!" } = err;
+
+  req.flash("error", `${statusCode}: ${message}`);
+  const redirectUrl = req.get("Referrer") || "/listings";
+  res.redirect(redirectUrl);
 });
 
 const startServer = async () => {
