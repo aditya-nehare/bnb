@@ -1,47 +1,81 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BNB</title>
-  </head>
-  <body>
-    <nav class="navbar navbar-expand-lg bg-body-light border-bottom">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="/listings">
-          <i class="fa-regular fa-compass"></i> BNB
+<nav class="navbar navbar-expand-md bg-white border-bottom sticky-top py-2">
+  <div class="container-fluid px-md-5">
+    <!-- Brand / Logo -->
+    <a class="navbar-brand d-flex align-items-center gap-2 text-danger fw-bold fs-4" href="/listings">
+      <i class="fa-regular fa-compass fa-bounce-hover"></i>
+      <span class="brand-text">BNB</span>
+    </a>
+
+    <!-- Navbar Toggle Button (Mobile) -->
+    <button
+      class="navbar-toggler border-0 shadow-none"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarContent"
+      aria-controls="navbarContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <!-- Centered Modern Search Bar -->
+      <div class="navbar-nav mx-auto my-2 my-md-0">
+        <form class="d-flex align-items-center search-bar shadow-sm" role="search" action="/listings" method="GET">
+          <input
+            class="form-control border-0 bg-transparent search-input ps-3 pe-2"
+            type="search"
+            name="q"
+            placeholder="Search destinations..."
+            aria-label="Search"
+          />
+          <button class="btn btn-search rounded-circle d-flex align-items-center justify-content-center m-1" type="submit">
+            <i class="fa-solid fa-magnifying-glass text-black"></i>
+          </button>
+        </form>
+      </div>
+
+      <!-- Right Navigation Links -->
+      <div class="navbar-nav ms-auto align-items-md-center gap-md-2 mt-2 mt-md-0">
+        <a class="nav-link host-link px-3 py-2 rounded-pill fw-medium text-dark" href="/listings/new">
+          Airbnb your home
         </a>
 
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNavAltMarkup"
-          aria-controls="navbarNavAltMarkup"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
+        <% if (!currUser) { %>
+          <a class="nav-link fw-semibold px-3 py-2 text-dark" href="/signup">Sign up</a>
+          <a class="nav-link fw-semibold px-3 py-2 text-dark" href="/login">Log in</a>
+        <% } %>
 
-        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-          <div class="navbar-nav">
-            <a class="nav-link" href="/listings">Explore</a>
+        <% if (currUser) { %>
+          <div class="nav-item dropdown">
+            <a
+              class="nav-link user-menu-btn d-flex align-items-center gap-2 border rounded-pill px-3 py-1 shadow-sm"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i class="fa-solid fa-bars text-secondary fs-6"></i>
+              <div class="user-avatar bg-dark text-white rounded-circle d-flex align-items-center justify-content-center">
+                <i class="fa-solid fa-user fs-7"></i>
+              </div>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-4 mt-2 py-2">
+              <li class="px-3 py-1 text-muted small">Signed in as <b>@<%= currUser.username %></b></li>
+              <li><hr class="dropdown-divider my-2" /></li>
+              <li><a class="dropdown-item py-2" href="/listings">Explore listings</a></li>
+              <li><a class="dropdown-item py-2" href="/listings/new">Airbnb your home</a></li>
+              <li><hr class="dropdown-divider my-2" /></li>
+              <li>
+                <a class="dropdown-item py-2 text-danger fw-semibold" href="/logout">
+                  <i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Log out
+                </a>
+              </li>
+            </ul>
           </div>
-
-          <div class="navbar-nav ms-auto">
-            <a class="nav-link" href="/listings/new">Airbnb your home</a>
-
-            <% if(!currUser) { %>
-              <a class="nav-link" href="/signup"><b>Sign up</b></a>
-              <a class="nav-link" href="/login"><b>Log in</b></a>
-            <% } %>
-            <% if (currUser) { %>
-              <a class="nav-link" href="/logout"><b>Log out</b></a>
-            <% } %>
-          </div>
-        </div>
+        <% } %>
       </div>
-    </nav>
-  </body>
-</html>
+    </div>
+  </div>
+</nav>

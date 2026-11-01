@@ -1,0 +1,148 @@
+<% layout("/layouts/Boilerplate") %>
+
+<!-- Hero Section with Background Overlay -->
+<div class="hero-container position-relative rounded-5 overflow-hidden my-4 text-white shadow-lg">
+  <div class="hero-overlay position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-center align-items-center text-center p-4">
+    <span class="badge bg-white text-dark rounded-pill px-3 py-2 mb-3 fw-semibold shadow-sm">
+      <i class="fa-solid fa-sparkles text-danger me-1"></i> Authentic Stays Worldwide
+    </span>
+    <h1 class="display-3 fw-bold mb-3 tracking-tight">Belong Anywhere</h1>
+    <p class="lead mb-4 text-light col-lg-8">
+      Discover cabins, beachfront villas, and urban lofts handpicked by local hosts across 190+ countries.
+    </p>
+
+    <!-- Floating Quick-Search Box -->
+    <div class="col-12 col-md-10 col-lg-7">
+      <form action="/listings" method="GET" class="hero-search-card bg-white p-2 rounded-pill shadow-lg d-flex align-items-center">
+        <div class="input-group border-0">
+          <span class="input-group-text bg-transparent border-0 text-muted ps-3">
+            <i class="fa-solid fa-location-dot text-danger"></i>
+          </span>
+          <input
+            type="search"
+            name="q"
+            class="form-control border-0 shadow-none ps-2"
+            placeholder="Where are you going?"
+            aria-label="Destination"
+          />
+        </div>
+        <button type="submit" class="btn btn-danger rounded-pill px-4 py-2 fw-semibold d-flex align-items-center gap-2">
+          <span>Explore</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Category Quick-Pills -->
+<div class="container my-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold mb-0 text-dark">Explore by Category</h3>
+    <a href="/listings" class="text-decoration-none text-danger fw-semibold small">View all categories &rarr;</a>
+  </div>
+
+  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
+    <div class="col">
+      <a href="/listings" class="category-card p-3 rounded-4 border bg-white d-flex flex-column align-items-center text-decoration-none text-dark shadow-sm">
+        <i class="fa-solid fa-umbrella-beach text-danger fs-3 mb-2"></i>
+        <span class="small fw-semibold">Beachfront</span>
+      </a>
+    </div>
+    <div class="col">
+      <a href="/listings" class="category-card p-3 rounded-4 border bg-white d-flex flex-column align-items-center text-decoration-none text-dark shadow-sm">
+        <i class="fa-solid fa-mountain text-danger fs-3 mb-2"></i>
+        <span class="small fw-semibold">Cabins</span>
+      </a>
+    </div>
+    <div class="col">
+      <a href="/listings" class="category-card p-3 rounded-4 border bg-white d-flex flex-column align-items-center text-decoration-none text-dark shadow-sm">
+        <i class="fa-solid fa-city text-danger fs-3 mb-2"></i>
+        <span class="small fw-semibold">Iconic Cities</span>
+      </a>
+    </div>
+    <div class="col">
+      <a href="/listings" class="category-card p-3 rounded-4 border bg-white d-flex flex-column align-items-center text-decoration-none text-dark shadow-sm">
+        <i class="fa-solid fa-person-swimming text-danger fs-3 mb-2"></i>
+        <span class="small fw-semibold">Pools</span>
+      </a>
+    </div>
+    <div class="col">
+      <a href="/listings" class="category-card p-3 rounded-4 border bg-white d-flex flex-column align-items-center text-decoration-none text-dark shadow-sm">
+        <i class="fa-brands fa-fort-awesome text-danger fs-3 mb-2"></i>
+        <span class="small fw-semibold">Mansions</span>
+      </a>
+    </div>
+    <div class="col">
+      <a href="/listings" class="category-card p-3 rounded-4 border bg-white d-flex flex-column align-items-center text-decoration-none text-dark shadow-sm">
+        <i class="fa-solid fa-campground text-danger fs-3 mb-2"></i>
+        <span class="small fw-semibold">Camping</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Featured Stays Grid -->
+<div class="container my-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold mb-1 text-dark">Trending Destinations</h3>
+      <p class="text-muted small mb-0">Most booked homes and experiences this month</p>
+    </div>
+    <a href="/listings" class="btn btn-outline-dark rounded-pill px-4">Browse all stays</a>
+  </div>
+
+  <div class="row row-cols-lg-4 row-cols-md-2 row-cols-1 g-4">
+    <% for (let ls of featuredListings) { %>
+      <div class="col">
+        <a href="/listings/<%= ls._id %>" class="text-decoration-none text-dark">
+          <div class="card h-100 border-0 rounded-4 overflow-hidden listing-card bg-transparent">
+            <div class="position-relative overflow-hidden rounded-4 mb-2" style="aspect-ratio: 20/19;">
+              <img
+                src="<%= ls.image && ls.image.url ? ls.image.url : ls.image %>"
+                class="w-100 h-100 object-fit-cover home-listing-img"
+                alt="<%= ls.title %>"
+                loading="lazy"
+              />
+            </div>
+            <div class="card-body p-1">
+              <div class="d-flex justify-content-between">
+                <span class="fw-bold text-truncate" style="max-width: 80%;"><%= ls.location %>, <%= ls.country %></span>
+                <span class="small"><i class="fa-solid fa-star text-dark"></i> 4.9</span>
+              </div>
+              <p class="text-muted small mb-1 text-truncate"><%= ls.title %></p>
+              <p class="mb-0">
+                <span class="fw-bold text-dark">&#8377; <%= ls.price ? ls.price.toLocaleString("en-IN") : "0" %></span>
+                <span class="text-muted small">/ night</span>
+              </p>
+            </div>
+          </div>
+        </a>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<!-- Host CTA Banner -->
+<div class="container my-5 pb-4">
+  <div class="row align-items-center bg-dark text-white rounded-5 p-4 p-md-5 g-4 shadow-lg">
+    <div class="col-md-7">
+      <span class="text-danger fw-bold text-uppercase small tracking-wide">Try Hosting</span>
+      <h2 class="display-5 fw-bold my-3">Earn money sharing your extra space.</h2>
+      <p class="text-secondary lead mb-4">
+        Join millions of hosts on BNB. Set your own schedule, prices, and rules with end-to-end host coverage.
+      </p>
+      <a href="/listings/new" class="btn btn-danger rounded-pill px-4 py-2 fw-semibold">
+        Airbnb your home
+      </a>
+    </div>
+    <div class="col-md-5 text-center">
+      <img
+        src="https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?auto=format&fit=crop&w=700&q=80"
+        alt="Host kitchen"
+        class="img-fluid rounded-4 shadow"
+        style="max-height: 280px; object-fit: cover; width: 100%;"
+      />
+    </div>
+  </div>
+</div>

@@ -1,8 +1,26 @@
+const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
+const mapToken = process.env.MAP_TOKEN;
+const geocodingClient = mbxGeocoding({ accessToken: mapToken });
+
 const Listing = require("../models/listing");
 
 module.exports.index = async (req, res) => {
-  const list = await Listing.find({});
-  res.render("listing/index", { list });
+  const { q } = req.query;
+  let query = {};
+
+  if (q && q.trim() !== "") {
+    const searchRegex = new RegExp(q.trim(), "i");
+    query = {
+      $or: [
+        { title: searchRegex },
+        { location: searchRegex },
+        { country: searchRegex },
+      ],
+    };
+  }
+
+  const list = await Listing.find(query);
+  res.render("listing/index", { list, searchQuery: q });
 };
 
 module.exports.renderNewForm = (req, res) => {
@@ -10,12 +28,21 @@ module.exports.renderNewForm = (req, res) => {
 };
 
 module.exports.createListing = async (req, res) => {
+  const response = await geocodingClient
+    .forwardGeocode({
+      query: `${req.body.listing.location}, ${req.body.listing.country}`,
+      limit: 1,
+    })
+    .send();
+
   const url = req.file.path;
   const filename = req.file.filename;
 
   let listing = new Listing(req.body.listing);
   listing.owner = req.user._id;
   listing.image = { url, filename };
+
+  listing.geometry = response.body.features[0].geometry;
 
   await listing.save();
   req.flash("success", "Successfully created a new listing!");
@@ -46,7 +73,10 @@ module.exports.editListingForm = async (req, res) => {
   }
 
   let originalImageUrl = listing.image.url;
-  let originalImageThumbnail = originalImageUrl.replace("/upload", "/upload/w_250,h_200,c_fill");
+  let originalImageThumbnail = originalImageUrl.replace(
+    "/upload",
+    "/upload/w_250,h_200,c_fill",
+  );
 
   res.render("listing/edit", { listing, originalImageThumbnail });
 };

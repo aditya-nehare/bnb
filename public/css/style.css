@@ -1,3 +1,206 @@
-body {
-  background-color: white;
+/* Brand Color */
+.navbar-brand {
+  color: #fe424d !important;
+  letter-spacing: -0.5px;
+}
+
+/* Floating Pill Search Bar */
+.search-bar {
+  border: 1px solid #e2e8f0;
+  border-radius: 40px;
+  background-color: #fff;
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+  min-width: 280px;
+  max-width: 420px;
+}
+
+.search-bar:hover,
+.search-bar:focus-within {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+  border-color: #cbd5e1;
+}
+
+.search-input {
+  font-size: 0.9rem;
+  box-shadow: none !important;
+}
+
+.search-input::placeholder {
+  color: #717171;
+  font-weight: 500;
+}
+
+/* Red Search Icon Button */
+.btn-search {
+  background-color: #fe424d;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border: none;
+  transition:
+    transform 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.btn-search:hover {
+  background-color: #e03741;
+  transform: scale(1.05);
+}
+
+.btn-search i {
+  font-size: 0.75rem;
+}
+
+/* Host Link Hover */
+.host-link {
+  transition: background-color 0.15s ease;
+}
+
+.host-link:hover {
+  background-color: #f7f7f7;
+}
+
+/* User Menu Button */
+.user-menu-btn {
+  background-color: #fff;
+  transition: box-shadow 0.2s ease;
+}
+
+.user-menu-btn:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) !important;
+}
+
+.user-avatar {
+  width: 28px;
+  height: 28px;
+}
+
+.fs-7 {
+  font-size: 0.75rem;
+}
+
+/* --- Filter Categories --- */
+#filters {
+  white-space: nowrap;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+#filters::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.filter {
+  cursor: pointer;
+  opacity: 0.7;
+  transition:
+    opacity 0.2s ease,
+    border-bottom 0.2s ease;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid transparent;
+  min-width: 60px;
+}
+
+.filter:hover,
+.filter.active {
+  opacity: 1;
+  color: #000 !important;
+  border-bottom-color: #000;
+}
+
+/* --- Listing Cards & Hover Effects --- */
+.card-img-wrapper {
+  position: relative;
+  aspect-ratio: 20 / 19;
+  background-color: #f1f5f9;
+}
+
+.listing-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+.listing-card:hover .listing-img {
+  transform: scale(1.04);
+}
+
+/* Like / Wishlist Button */
+.btn-like {
+  z-index: 2;
+  transition: transform 0.15s ease;
+}
+.btn-like:hover {
+  transform: scale(1.15);
+}
+.drop-shadow {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+/* Tax Toggle Border */
+.tax-toggle {
+  border-color: #e2e8f0 !important;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.tax-toggle:hover {
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Hero Section */
+.hero-container {
+  height: 520px;
+  background-image: url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80");
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.35) 0%,
+    rgba(0, 0, 0, 0.65) 100%
+  );
+}
+
+.hero-search-card {
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+/* Category Quick Card */
+.category-card {
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.category-card:hover {
+  transform: translateY(-4px);
+  border-color: #fe424d !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Featured Listing Cards */
+.home-listing-img {
+  transition: transform 0.35s ease;
+}
+
+.listing-card:hover .home-listing-img {
+  transform: scale(1.05);
+}
+
+.btn-danger {
+  background-color: #fe424d;
+  border-color: #fe424d;
+}
+
+.btn-danger:hover {
+  background-color: #e03741;
+  border-color: #e03741;
 }
