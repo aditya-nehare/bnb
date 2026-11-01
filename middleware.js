@@ -1,5 +1,6 @@
 const Listing = require("./models/listing");
 const Review = require("./models/review");
+const ExpressError = require("./utils/ExpressError.js");
 
 module.exports.logger = (req, res, next) => {
   const timestamp = new Date().toISOString();
@@ -47,4 +48,24 @@ module.exports.isReviewAuthor = async (req, res, next) => {
     return res.redirect(`/listings/${id}`);
   }
   next();
+};
+
+module.exports.validate_review = (req, res, next) => {
+  let { error } = reviewSchema.validate(req.body);
+  if (error) {
+    let errormessage = error.details.map((el) => el.message).join(", ");
+    throw new ExpressError(400, errormessage);
+  } else {
+    next();
+  }
+};
+
+module.exports.validatelisting = (req, res, next) => {
+  let { error } = listingSchema.validate(req.body);
+  if (error) {
+    let errormessage = error.details.map((el) => el.message).join(", ");
+    throw new ExpressError(400, errormessage);
+  } else {
+    next();
+  }
 };
