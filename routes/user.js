@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 
+const User = require("../models/user.js");
+const { saveRedirectUrl } = require("../middleware.js");
+
 router.get("/signup", (req, res) => {
   res.render("users/signup");
 });
@@ -16,7 +19,7 @@ router.post("/signup", async (req, res) => {
     // Automatically log the user in after signing up
     req.login(registeredUser, (err) => {
       if (err) return next(err);
-      req.flash("success", "Welcome back");
+      req.flash("success", "Welcome to App");
       res.redirect("/listings");
     });
   } catch (e) {
@@ -26,12 +29,12 @@ router.post("/signup", async (req, res) => {
 });
 
 router.get("/login", (req, res) => {
-  res.render("users/login")
-})
+  res.render("users/login");
+});
 
 router.post(
   "/login",
-  // Passport automatically checks the DB and compares the hashed password
+  saveRedirectUrl,
   passport.authenticate("local", {
     failureRedirect: "/login",
     failureFlash: true, // Automatically flashes an error if login fails
@@ -39,8 +42,20 @@ router.post(
   async (req, res) => {
     // If execution reaches here, the user is successfully authenticated
     req.flash("success", "Welcome back!");
-    res.redirect("/listings");
+    let redirectUrl = res.locals.redirectUrl;
+    console.log(redirectUrl);
+    res.redirect(redirectUrl);
   },
 );
+
+router.get("/logout", (req, res, next) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    req.flash("success", "You are logged out!");
+    res.redirect("/listings");
+  });
+});
 
 module.exports = router;
