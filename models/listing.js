@@ -33,10 +33,22 @@ const listingSchema = new Schema({
       ref: "Review",
     },
   ],
-  owner : {
+  owner: {
     type: Schema.Types.ObjectId,
-    ref: "User"
-  }
+    ref: "User",
+  },
+  // GeoJSON field
+  geometry: {
+    type: {
+      type: String,
+      enum: ["Point"],
+      required: true,
+    },
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+      required: true,
+    },
+  },
 });
 
 listingSchema.post("findOneAndDelete", async (listing) => {

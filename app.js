@@ -14,8 +14,9 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
 
-const ExpressError = require("./utils/ExpressError.js");
 const { logger } = require("./middleware.js");
+
+const Listing = require("./models/listing");
 
 const listing_router = require("./routes/listing.js");
 const review_router = require("./routes/review.js");
@@ -82,8 +83,9 @@ const connectDB = async () => {
   }
 };
 
-app.get("/", (req, res) => {
-  res.status(200).json({ status: "success", message: "Hi, I am root" });
+app.get("/", async (req, res) => {
+  const featuredListings = await Listing.find({}).limit(8);
+  res.render("home.ejs", { featuredListings });
 });
 
 app.all("*", (req, res) => {
