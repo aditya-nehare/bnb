@@ -3,6 +3,7 @@
 <div class="row mt-4 mb-5">
   <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
     <h2 class="fw-bold mb-3"><%= listing.title %></h2>
+    <p>Owned by <i><%= listing.owner.username %></i></p>
   </div>
 
   <div
@@ -39,29 +40,19 @@
   </div>
 
   <!-- Action Buttons (Edit / Delete) -->
-  <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 d-flex gap-3 mb-5">
-    <a
-      href="/listings/<%= listing._id %>/edit"
-      class="btn btn-dark px-4 py-2 rounded-pill shadow-sm fw-medium"
-    >
-      <i class="fa-solid fa-pen-to-square me-2"></i> Edit
-    </a>
-
-    <form action="/listings/<%= listing._id %>?_method=DELETE" method="POST">
-      <button
-        class="btn btn-outline-danger px-4 py-2 rounded-pill shadow-sm fw-medium"
-        onclick="return confirm('Are you sure you want to delete this listing?');"
-      >
-        <i class="fa-solid fa-trash-can me-2"></i> Delete
-      </button>
+  <% if (currUser && listing.owner._id.equals(currUser._id)) { %>
+  <div class="btns">
+    <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark">Edit</a>
+    <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE">
+      <button class="btn btn-danger">Delete</button>
     </form>
   </div>
+<% } %>
 
   <hr
     class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 text-muted opacity-25 mb-5"
   />
 
-  <!-- Leave a Review Section -->
   <div
     class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 bg-white p-4 p-md-5 rounded-4 shadow-sm border"
   >
@@ -144,11 +135,11 @@
 
                     <!-- Clean Rating Badge -->
                     <div class="bg-light px-3 py-1 rounded-pill border d-flex align-items-center">
-                      <form action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
-                        <button>
-                          delete
-                        </button>
-                      </form>
+                      <% if (currUser && review.author._id.equals(currUser._id)) { %>
+                        <form method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
+                          <button class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                      <% } %>
                     </div>
                   </div>
 

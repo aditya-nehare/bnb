@@ -47,26 +47,20 @@ const session_option = {
 app.use(session(session_option));
 app.use(flash());
 
+app.use(session(session_option));
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
+  res.locals.currUser = req.user;
   next();
 });
-
-//Session config (must come before passport)
-app.use(session(session_option));
-
-//Initialize Passport
-app.use(passport.initialize());
-app.use(passport.session()); // Enables persistent login sessions
-
-//Configure Passport Strategy
-// use static authenticate method of model in LocalStrategy
-passport.use(new LocalStrategy(User.authenticate()));
-
-//Tell Passport how to store/retrieve users in the session
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
 
 app.use("/listings", listing_router);
 app.use("/listings/:id/reviews", review_router);

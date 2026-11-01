@@ -5,6 +5,7 @@ const Review = require("../models/review.js");
 const wrapAsync = require("../utils/wrapAsync.js");
 const ExpressError = require("../utils/ExpressError.js");
 const Listing = require("../models/listing.js");
+const { isLoggedIn, isReviewAuthor } = require("../middleware.js");
 
 const validate_review = (req, res, next) => {
   let { error } = reviewSchema.validate(req.body);
@@ -18,16 +19,21 @@ const validate_review = (req, res, next) => {
 
 router.post(
   "/",
+  isLoggedIn,
   validate_review,
   wrapAsync(async (req, res) => {
     let listing = await Listing.findById(req.params.id);
 
     if (!listing) {
-      req.flash("error", "The listing you are trying to review does not exist!");
+      req.flash(
+        "error",
+        "The listing you are trying to review does not exist!",
+      );
       return res.redirect("/listings");
     }
 
     let new_review = new Review(req.body.review);
+    new_review.author = req.user._id;
 
     listing.reviews.push(new_review);
     await new_review.save();
@@ -40,6 +46,8 @@ router.post(
 
 router.delete(
   "/:review_id",
+  isLoggedIn,
+  isReviewAuthor,
   wrapAsync(async (req, res) => {
     let { id, review_id } = req.params;
 
