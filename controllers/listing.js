@@ -27,26 +27,74 @@ module.exports.renderNewForm = (req, res) => {
   res.render("listing/new");
 };
 
-module.exports.createListing = async (req, res) => {
-  const response = await geocodingClient
-    .forwardGeocode({
-      query: `${req.body.listing.location}, ${req.body.listing.country}`,
-      limit: 1,
-    })
-    .send();
+module.exports.createListing = async (req, res, next) => {
+  console.log("\n--- [START] CREATE LISTING SUBMISSION ---");
+  console.log("1. Checking Multer file upload (Cloudinary)...");
+  console.log(
+    "   req.file:",
+    req.file
+      ? { path: req.file.path, filename: req.file.filename }
+      : "NO FILE DETECTED",
+  );
 
-  const url = req.file.path;
-  const filename = req.file.filename;
+  console.log("2. Checking Mapbox Geocoding Token...");
+  console.log(
+    "   MAP_TOKEN starts with:",
+    process.env.MAP_TOKEN
+      ? process.env.MAP_TOKEN.substring(0, 10) + "..."
+      : "UNDEFINED",
+  );
 
-  let listing = new Listing(req.body.listing);
-  listing.owner = req.user._id;
-  listing.image = { url, filename };
+  let geometry = {
+    type: "Point",
+    coordinates: [77.209, 28.6139], // Default fallback [lng, lat] (New Delhi)
+  };
 
-  listing.geometry = response.body.features[0].geometry;
+  try {
+    const geoResponse = await geocodingClient
+      .forwardGeocode({
+        query: `${req.body.listing.location}, ${req.body.listing.country}`,
+        limit: 1,
+      })
+      .send();
 
-  await listing.save();
-  req.flash("success", "Successfully created a new listing!");
-  res.redirect("/listings");
+    console.log("3. Mapbox geocoding call succeeded!");
+    if (
+      geoResponse.body &&
+      geoResponse.body.features &&
+      geoResponse.body.features.length > 0
+    ) {
+      geometry = geoResponse.body.features[0].geometry;
+      console.log("   Coordinates retrieved:", geometry.coordinates);
+    } else {
+      console.warn(
+        "   No features returned by Mapbox for this location. Using fallback.",
+      );
+    }
+  } catch (geoErr) {
+    console.error("MAPBOX ERROR DETECTED:");
+    console.error("   Status / Message:", geoErr.message);
+    if (geoErr.statusCode) console.error("   Status code:", geoErr.statusCode);
+  }
+
+  try {
+    const url = req.file.path;
+    const filename = req.file.filename;
+
+    let listing = new Listing(req.body.listing);
+    listing.owner = req.user._id;
+    listing.image = { url, filename };
+    listing.geometry = geometry;
+
+    const savedDoc = await listing.save();
+    console.log("4. Listing saved successfully with ID:", savedDoc._id);
+
+    req.flash("success", "Successfully created a new listing!");
+    res.redirect(`/listings/${savedDoc._id}`);
+  } catch (dbErr) {
+    console.error("MONGOOSE SAVE ERROR:", dbErr);
+    next(dbErr);
+  }
 };
 
 module.exports.showListing = async (req, res) => {
